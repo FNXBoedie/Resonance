@@ -1,0 +1,2053 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #8C1448;
+            --secondary-color: #89132f;
+            --bg-dark: #121212;
+            --bg-card: #181818;
+            --bg-light: #282828;
+            --text-primary: #f1f1f1;
+            --text-secondary: #b3b3b3;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 240px;
+            background-color: black;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+        }
+
+        .logo i {
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+
+        .sidebar-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin: 20px 0 10px 20px;
+        }
+
+        .playlists {
+            list-style: none;
+        }
+
+        .playlist-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .playlist-item i {
+            margin-right: 15px;
+            font-size: 20px;
+        }
+
+        .playlist-item:hover, .playlist-item.active {
+            background-color: rgba(191, 44, 108, 0.05);
+        }
+
+        .add-playlist {
+            margin: 15px 20px;
+            background-color: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .add-playlist i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .add-playlist:hover {
+            color: var(--text-primary);
+        }
+
+        /* Main content styles */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .search-header {
+            padding: 20px 30px;
+            background-color: rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border-radius: 30px;
+            border: none;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background-color: #333;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        /* Content area */
+        .content-area {
+            padding: 20px 30px;
+            flex: 1;
+            overflow-y: auto;
+            background: linear-gradient(to bottom, #3a3a3a, var(--bg-dark) 300px);
+        }
+
+        .playlist-header {
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .playlist-cover {
+            width: 180px;
+            height: 180px;
+            margin-right: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
+        }
+
+        .playlist-info h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .playlist-info p {
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .playlist-info .creator {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .tracks-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tracks-table th {
+            padding: 10px 15px;
+            text-align: left;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tracks-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tracks-table tr {
+            transition: var(--transition);
+        }
+
+        .tracks-table tr:hover {
+            background-color: rgba(85, 28, 53, 0.05);
+        }
+
+        .tracks-table tr.active {
+            background-color: rgba(191, 44, 108, 0.05);
+        }
+
+        .track-number {
+            width: 40px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .track-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .track-image {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .track-name-artist {
+            flex: 1;
+        }
+
+        .track-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .track-artist {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .track-genre {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .track-duration {
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .track-sample {
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-align: left;
+        }
+
+        /* Player controls */
+        .player-controls {
+            height: 90px;
+            background-color: var(--bg-card);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .current-track {
+            display: flex;
+            align-items: center;
+            width: 30%;
+        }
+
+        .current-track-image {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .current-track-info {
+            flex: 1;
+        }
+
+        .current-track-name {
+            font-weight: 500;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        .current-track-artist {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        .like-button {
+            margin-left: 15px;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .like-button:hover {
+            color: var(--primary-color);
+        }
+
+        .player-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .player-buttons {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .player-button {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            margin: 0 15px;
+            font-size: 20px; /* Increase icon size */
+            transition: var(--transition);
+        }
+
+        .player-button:hover {
+            color: var(--primary-color);
+        }
+
+        .player-button.play-pause {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+       
+
+        .player-timeline {
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            width: 35px;
+            text-align: center;
+        }
+
+        .timeline-progress {
+            flex: 1;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin: 0 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .timeline-progress-filled {
+            height: 100%;
+            width: 0%;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .timeline-progress-filled:hover, .timeline-progress:hover .timeline-progress-filled {
+            background-color: var(--primary-color);
+        }
+
+       
+
+        .timeline-progress:hover .timeline-handle {
+            display: block;
+        }
+
+        .player-right {
+            width: 30%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+        }
+
+        .volume-button {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .volume-slider {
+            width: 100px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .volume-slider-filled {
+            height: 100%;
+            width: 100%;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .volume-slider:hover .volume-slider-filled {
+            background-color: var(--primary-color);
+        }
+
+        .additional-controls {
+            margin-left: 20px;
+        }
+
+        .additional-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            margin-left: 15px;
+            transition: var(--transition);
+        }
+
+        .additional-button:hover, .additional-button.active {
+            color: var(--primary-color);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #555; 
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #777; 
+        }
+
+        /* Home page grid layout */
+        .home-container {
+            padding: 30px;
+            display: none;
+        }
+
+        .home-title {
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        
+
+        .playlist-card {
+            background-color: var(--bg-card);
+            border-radius: 6px;
+            padding: 16px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .playlist-card:hover {
+            background-color: rgba(191, 44, 108, 0.05);
+        }
+
+        .playlist-card-image {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+
+        .playlist-card-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .playlist-card-info {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        /* Latest Tracks Section */
+        .latest-tracks-section {
+            margin-top: 40px;
+        }
+
+        .latest-tracks-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+    
+
+        /* Favorites Section */
+        .favorites-title {
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+    
+
+        .track-card {
+            background-color: var(--bg-card);
+            border-radius: 6px;
+            padding: 16px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .track-card:hover {
+            background-color: rgba(191, 44, 108, 0.05);
+        }
+
+        .track-card-image {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+
+        .track-card-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .track-card-artist {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        /* Jukebox Section */
+        .jukebox-title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .jukebox-controls {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .jukebox-add-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .jukebox-add-btn i {
+            margin-right: 8px;
+        }
+
+        .jukebox-add-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .jukebox-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .jukebox-table th {
+            padding: 10px 15px;
+            text-align: left;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .jukebox-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .jukebox-table tr {
+            transition: var(--transition);
+        }
+
+        .jukebox-table tr:hover {
+            background-color: rgba(85, 28, 53, 0.05);
+        }
+
+        .jukebox-table tr.active {
+            background-color: rgba(191, 44, 108, 0.05);
+        }
+
+
+        /* Media query for responsive design */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 200px;
+            }
+            
+            .track-genre {
+                display: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .current-track-info {
+                max-width: 120px;
+            }
+            
+            .player-right {
+                width: 20%;
+            }
+            
+            .additional-controls {
+                display: none;
+            }
+        }
+
+        /* Grid Layouts */
+/* Default grid layout for all grid sections */
+.playlists-grid,
+.latest-tracks-grid,
+.favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns by default for desktop */
+    grid-gap: 24px;
+}
+
+/* Playlist card, track card base styles */
+.playlist-card,
+.track-card {
+    background-color: var(--bg-card);
+    border-radius: 6px;
+    padding: 16px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+    width: 100%; /* Ensure cards fill their grid cell */
+}
+
+/* Ensure images scale within cards */
+.playlist-card-image,
+.track-card-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    margin-bottom: 16px;
+    border-radius: 4px;
+}
+
+/* Responsive adjustments with media queries */
+@media (max-width: 1200px) {
+    .playlists-grid,
+    .latest-tracks-grid,
+    .favorites-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 columns for medium screens */
+    }
+}
+
+@media (max-width: 900px) {
+    .playlists-grid,
+    .latest-tracks-grid,
+    .favorites-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns for smaller screens */
+    }
+}
+
+@media (max-width: 600px) {
+    .playlists-grid,
+    .latest-tracks-grid,
+    .favorites-grid {
+        grid-template-columns: 1fr; /* 1 column for mobile */
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <br>
+            <div class="logo" style="display: flex; align-items: center;">
+                <i class="fas fa-music"></i> Resonance
+            </div>
+     
+       </div>
+        
+        <h3 class="sidebar-title">Library</h3>
+        <ul class="playlists">
+            <li class="playlist-item active" data-view="home">
+                <i class="fas fa-home"></i> Home
+            </li>
+            <li class="playlist-item" data-view="favorites">
+                <i class="fas fa-heart"></i> Spotlight
+            </li>
+            <li class="playlist-item" data-view="jukebox">
+                <i class="fas fa-music"></i> Jukebox
+            </li>
+        </ul>
+        
+        <h3 class="sidebar-title">Playlists</h3>
+        <ul class="playlists" id="playlist-list">
+            <li class="playlist-item" data-playlist="Originals">
+                <i class="fas fa-list"></i> Originals
+            </li>
+            <li class="playlist-item" data-playlist="Bootlegs">
+                <i class="fas fa-list"></i> Bootlegs
+            </li>
+            <li class="playlist-item" data-playlist="Covers">
+                <i class="fas fa-list"></i> Covers
+            </li>
+            <li class="playlist-item" data-playlist="Vaibe">
+                <i class="fas fa-list"></i> Vaibe
+            </li>          
+        </ul>
+        
+        <button class="add-playlist">
+            <i class="fas fa-plus-circle"></i> Create Playlist
+        </button>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Search Header -->
+        <div class="search-header">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" fillout="Search for artists, songs or genres...">
+            </div>
+        </div>
+        
+        <!-- Home Page -->
+        <div class="content-area" id="home-view">
+            <h1 class="home-title">Welcome to Resonance</h1>
+            
+            <!-- Latest Tracks Section -->
+            <div class="latest-tracks-section">
+                <h2 class="latest-tracks-title">Latest Tracks</h2>
+                <div class="latest-tracks-grid" id="latest-tracks-grid">
+                    <div class="track-card" data-src="music/bailoenlalluvia.m4a">
+                        <img src="images/new.jpg" alt="" class="track-card-image">
+                        <div class="track-card-title">Bailo En La Lluvia</div>
+                        <div class="track-card-artist">Boedie</div>
+                    </div>
+                    <div class="track-card" data-src="music/terracev2.m4a">
+                        <img src="images/new.jpg" alt="" class="track-card-image">
+                        <div class="track-card-title">Red Wine On The Terrace (v2)</div>
+                        <div class="track-card-artist">Boedie</div>
+                    </div>
+                    <div class="track-card" data-src="music/meninadevermelhoremix.m4a">
+                        <img src="images/new.jpg" alt="" class="track-card-image">
+                        <div class="track-card-title">Menina De Vermelho (Remix)</div>
+                        <div class="track-card-artist">Boedie</div>
+                    </div>
+                    <div class="track-card" data-src="music/zurückgelassen.m4a">
+                        <img src="images/new.jpg" alt="" class="track-card-image">
+                        <div class="track-card-title">Zurückgelassen</div>
+                        <div class="track-card-artist">Boedie</div>
+                    </div>
+                </div>
+                <br>
+            </div>
+            
+            <!-- Playlists Section -->
+            <div class="playlists-section">
+                <h2 class="playlists-title">Playlists</h2>
+                <br>
+                <div class="playlists-grid" id="playlists-grid">
+                    <!-- Playlist cards will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Spotlight Page -->
+        <div class="content-area" id="favorites-view" style="display: none;">
+            <h1 class="favorites-title">Tracks In The Spotlight</h1>
+            <div class="favorites-grid" id="favorites-grid">
+                <div class="track-card" data-src="music/mamanocontesta.m4a">
+                    <img src="images/spotlight.jpg" alt="Vielleicht Vielleicht" class="track-card-image">
+                    <div class="track-card-title">Mama No Contesta</div>
+                    <div class="track-card-artist">Boedie</div>
+                </div>
+                <div class="track-card" data-src="music/yapeli.m4a">
+                    <img src="images/spotlight.jpg" alt="Vielleicht Vielleicht" class="track-card-image">
+                    <div class="track-card-title">Ya Peli</div>
+                    <div class="track-card-artist">Boedie</div>
+                </div>
+                <div class="track-card" data-src="music/vielleichtvielleicht.m4a">
+                    <img src="images/spotlight.jpg" alt="Vielleicht Vielleicht" class="track-card-image">
+                    <div class="track-card-title">Vielleicht Vielleicht</div>
+                    <div class="track-card-artist">Boedie</div>
+                </div>
+                <div class="track-card" data-src="music/kbounce.m4a">
+                    <img src="images/spotlight.jpg" alt="Vielleicht Vielleicht" class="track-card-image">
+                    <div class="track-card-title">K-Bounce</div>
+                    <div class="track-card-artist">Boedie</div>
+                </div>
+
+                <div class="track-card" data-src="music/pourquoijedorspas.m4a">
+                    <img src="images/spotlight.jpg" alt="Vielleicht Vielleicht" class="track-card-image">
+                    <div class="track-card-title">Pourquoi Je Dors Pas</div>
+                    <div class="track-card-artist">Boedie</div>
+                </div>
+                <div class="track-card" data-src="music/midnightdreamhouse.m4a">
+                    <img src="images/spotlight.jpg" alt="Vielleicht Vielleicht" class="track-card-image">
+                    <div class="track-card-title">Midnight Dream (Jazz/house)</div>
+                    <div class="track-card-artist">Boedie</div>
+                </div>
+                <div class="track-card" data-src="music/vida.m4a">
+                    <img src="images/spotlight.jpg" alt="Vielleicht Vielleicht" class="track-card-image">
+                    <div class="track-card-title">Vida</div>
+                    <div class="track-card-artist">Boedie</div>
+                </div>
+                <div class="track-card" data-src="music/elysium.m4a">
+                    <img src="images/spotlight.jpg" alt="Vielleicht Vielleicht" class="track-card-image">
+                    <div class="track-card-title">Elysium</div>
+                    <div class="track-card-artist">Boedie</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Jukebox Page -->
+        <div class="content-area" id="jukebox-view" style="display: none;">
+            <h1 class="jukebox-title">Jukebox</h1>
+            <div class="jukebox-controls">
+                <button class="jukebox-add-btn" id="add-local-files">
+                    <i class="fas fa-plus"></i> Add Files or Folder
+                </button>
+                <input type="file" id="file-input" multiple accept="audio/*" style="display: none;">
+            </div>
+            <table class="jukebox-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>TITLE</th>
+                        
+                        <th>DURATION</th>
+                    </tr>
+                </thead>
+                <tbody id="jukebox-tracks-list">
+                    <!-- Local tracks will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Playlist Content Area -->
+        <div class="content-area" id="playlist-view" style="display: none;">
+            <div class="playlist-header">
+                <img src="placeholder" alt="Playlist Cover" class="playlist-cover" id="playlist-cover">
+                <div class="playlist-info">
+                    <p>PLAYLIST</p>
+                    <h1 id="playlist-name">Originals</h1>
+                    <p><span class="creator">Boedie</span> • <span id="playlist-details">10 songs, 45 min</span></p>
+                </div>
+            </div>
+            
+            <table class="tracks-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>TITLE</th>
+                        <th>GENRE</th>
+                        <th>SAMPLE</th>
+                        <th>DURATION</th>
+                    </tr>
+                </thead>
+                <tbody id="tracks-list">
+                    <!-- Tracks will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="player-controls">
+            <div class="current-track">
+                <img src="images/robotguitar.jpg" alt="Current Track" class="current-track-image" id="current-track-image">
+                <div class="current-track-info">
+                    <div class="current-track-name" id="current-track-name">Select a track</div>
+                    <div class="current-track-artist" id="current-track-artist">-</div>
+                </div>
+                <button class="like-button">
+                    <i class="far fa-heart"></i>
+                </button>
+            </div>
+
+            <div class="player-center">
+                <div class="player-buttons">
+                    <button class="player-button shuffle">
+                        <i class="fas fa-random"></i>
+                    </button>
+                    <button class="player-button previous" id="prev-btn">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="player-button play-pause" id="play-btn">
+                        <i class="fas fa-play" id="play-icon"></i>
+                    </button>
+                    <button class="player-button next" id="next-btn">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                    <button class="player-button repeat" id="loop-btn">
+                        <i class="fas fa-redo-alt"></i>
+                    </button>
+                </div>
+
+                <div class="player-timeline">
+                    <div class="timeline-time" id="current-time">0:00</div>
+                    <div class="timeline-progress" id="progress-container">
+                        <div class="timeline-progress-filled" id="progress-bar">
+                            <div class="timeline-handle"></div>
+                        </div>
+                    </div>
+                    <div class="timeline-time" id="duration">0:00</div>
+                </div>
+            </div>
+
+            <div class="player-right" style="padding-right: 165px;">
+                <div class="volume-control">
+                    <button class="volume-button">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                    <div class="volume-slider">
+                        <div class="volume-slider-filled"></div>
+                    </div>
+                </div>
+            </div>
+
+               
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden audio element -->
+    <audio id="audio"></audio>
+
+    <script>
+        // Track collections for different playlists
+        const allPlaylists = {
+            Originals: [
+            { 
+                    id: 1,
+                    title: "Island Groove", 
+                    artist: "Boedie", 
+                    genre: "Raggaeton",
+                    duration: "2:27",
+                    src: "music/islandgroove.m4a",
+                    cover: "images/robotdrum.jpg",
+                    sample: "Original"
+                },    
+            { 
+                    id: 2,
+                    title: "Dança Comigo ", 
+                    artist: "Boedie", 
+                    genre: "Raggaeton",
+                    duration: "2:59",
+                    src: "music/dancaconmigo.m4a",
+                    cover: "images/robotdrum.jpg",
+                    sample: "Original"
+                },
+                { 
+                    id: 3,
+                    title: "Pourquoi Je Dors Pas", 
+                    artist: "Boedie", 
+                    genre: "French/Arabic Rap",
+                    duration: "3:03",
+                    src: "music/pourquoijedorspas.m4a",
+                    cover: "images/robotdrum.jpg",
+                    sample: "Original"
+                },
+                { 
+                    id: 4,
+                    title: "Night Drive Confessions",
+                    artist: "Boedie",
+                    genre: "Trap",
+                    duration: "2:27",
+                    src: "music/nightdriveconfessions.m4a",
+                    cover: "images/robotdrum.jpg",
+                    sample: "Original"
+                },
+                { 
+                    id: 5,
+                    title: "Never Broke", 
+                    artist: "Boedie", 
+                    genre: "Future House",
+                    duration: "2:27",
+                    src: "music/neverbroke.m4a",
+                    cover: "images/robotdrum.jpg",
+                    sample: "Original"
+                },
+                { 
+                    id: 6,
+                    title: "Vestígios de Nós", 
+                    artist: "Boedie", 
+                    genre: "Hip Hop Tuga",
+                    duration: "3:37",
+                    src: "music/vestigiosdenos.m4a",
+                    cover: "images/robotdrum.jpg",
+                    sample: "Original"
+                },
+                { 
+                    id: 7,
+                    title: "Deliverance v1", 
+                    artist: "Boedie", 
+                    genre: "Folk",
+                    duration: "2:52",
+                    src: "music/deliverancev1.m4a",
+                    cover: "images/robotdrum.jpg",
+                    sample: "Original"
+                },
+                { 
+                    id: 8,
+                    title: "Deliverance v2", 
+                    artist: "Boedie", 
+                    genre: "Folk",
+                    duration: "3:08",
+                    src: "music/deliverancev2.m4a",
+                    cover: "images/robotdrum.jpg",
+                    sample: "Original"
+                },
+                {
+                    id: 9,
+                    title: "Tokyo Dame Tu Ritmo",
+                    artist: "Boedie",
+                    genre: "Reggaeton",
+                    duration: "2:40",
+                    src: "music/tokyodameturitmo.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Original"
+                },
+                { 
+                    id: 10,
+                    title: "Mama No Contesta", 
+                    artist: "Boedie", 
+                    genre: "Reggaeton",
+                    duration: "2:45",
+                    src: "music/mamanocontesta.m4a",
+                    cover: "images/robotdrum.jpg",
+                    sample: "Original"
+                },
+                { 
+                    id: 11,
+                    title: "Bailo En La Lluvia ", 
+                    artist: "Boedie", 
+                    genre: "Reggaeton",
+                    duration: "2:36",
+                    src: "music/bailoenlluvia.m4a",
+                    cover: "images/robotdrum.jpg",
+                    sample: "Original"
+                },                       
+            ],
+            Bootlegs: [
+            {
+                    id: 1,
+                    title: "Ya Peli",
+                    artist: "Boedie",
+                    genre: "Latin/House",
+                    duration: "2:29",
+                    src: "music/yapeli.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Souberian & Mont Rouge - Ya Peli"
+                },
+                {
+                    id: 2,
+                    title: "Ya Peli",
+                    artist: "Boedie",
+                    genre: "Tropical House",
+                    duration: "2:59",
+                    src: "music/yapelitropical.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Souberian & Mont Rouge - Ya Peli"
+                },
+                {
+                    id: 3,
+                    title: "Talkin' Bout Love Anthem",
+                    artist: "Boedie",
+                    genre: "80s Rock Anthem",
+                    duration: "3:35",
+                    src: "music/talkinboutloveanthem.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Van Halen - Ain't Talkin' Bout Love"
+                },
+                {
+                    id: 4,
+                    title: "Midnight Dream",
+                    artist: "Boedie",
+                    genre: "Jazz/House",
+                    duration: "2:59",
+                    src: "music/midnightdreamhouse.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Metro Boomin - Am I Dreaming"
+                },
+                {
+                    id: 5,
+                    title: "Midnight Dream",
+                    artist: "Boedie",
+                    genre: "Jazz/Trap",
+                    duration: "2:28",
+                    src: "music/midnightdreamtrap.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Metro Boomin - Am I Dreaming"
+                },
+                {
+                    id: 6,
+                    title: "Midnight Dream",
+                    artist: "Boedie",
+                    genre: "Jazz" ,
+                    duration: "2:51",
+                    src: "music/midnightdreamjazz.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Metro Boomin - Am I Dreaming"
+                },
+                {
+                    id: 7,
+                    title: "Midnight Dream",
+                    artist: "Boedie",
+                    genre: "Rock Balad",
+                    duration: "3:32",
+                    src: "music/midnightdreamrock.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Metro Boomin - Am I Dreaming"
+                },
+                {
+                    id: 8,
+                    title: "LLama Congelada",
+                    artist: "Boedie",
+                    genre: "Raggaeton/Dance",
+                    duration: "3:37",
+                    src: "music/llamacongelada.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Jeckyll & Hyde - Frozen Flame"
+                },
+                {
+                    id: 9,
+                    title: "Donmuş Alev",
+                    artist: "Boedie",
+                    genre: "Turkish Halay",
+                    duration: "3:43",
+                    src: "music/donmuşalev.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Jeckyll & Hyde - Frozen Flame"
+                },
+                {
+                    id: 10,
+                    title: "застывшее пламя",
+                    artist: "Boedie",
+                    genre: "Russian Folk Dance",
+                    duration: "2:06",
+                    src: "music/frozenflamerussian.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Jeckyll & Hyde - Frozen Flame"
+                },
+                {
+                    id: 11,
+                    title: "It's A dream",
+                    artist: "Boedie",
+                    genre: "Hard Trance",
+                    duration: "2:43",
+                    src: "music/itsadreamtrance.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Dj Panda - It's A Dream"
+                },
+                {
+                    id: 12,
+                    title: "It's A Dream",
+                    artist: "Boedie",
+                    genre: "Baile Funk",
+                    duration: "2:58",
+                    src: "music/itsadreambaile.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Dj Panda - It's A Dream"
+                },
+                
+                {
+                    id: 13,
+                    title: "Struggle for Pleasure",
+                    artist: "Boedie",
+                    genre: "House",
+                    duration: "3:41",
+                    src: "music/struggleforpleasure.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Wim Mertens - Struggle for Pleasure"
+                },
+                {
+                    id: 14,
+                    title: "La Vida Es Un Carnaval",
+                    artist: "Boedie",
+                    genre: "Raggaeton",
+                    duration: "2:24",
+                    src: "music/lavidaesuncarnaval.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Raffa FL, HÄWK, Skylin3 – La Vida Es Un Carnaval "
+                },
+                {
+                    id: 15,
+                    title: "Menina de Vermelho",
+                    artist: "Boedie",
+                    genre: "Brasilian Funk",
+                    duration: "2:46",
+                    src: "music/meninadevermelho.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: " RAMONMIX, The Ironix, MC Menor JP -Menina de Vermelho"
+                },
+                {
+                    id: 16,
+                    title: "Red Wine on the Terrace v1",
+                    artist: "Boedie",
+                    genre: "Jazz",
+                    duration: "3:26",
+                    src: "music/terrace.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Abel - Onderweg"
+                },
+                {
+                    id: 17,
+                    title: "Red Wine on the Terrace v2",
+                    artist: "Boedie",
+                    genre: "Jazz",
+                    duration: "2:30",
+                    src: "music/terracev2.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Abel - Onderweg"
+                },
+            ],
+            Covers: [
+            {
+                    id: 1,
+                    title: "Vida",
+                    artist: "Boedie",
+                    genre: "Reggaeton",
+                    duration: "2:29",
+                    src: "music/vida.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "El Rey ft Tian'C - Vida"
+                },
+                {
+                    id: 2,
+                    title: "La Última Vuelta",
+                    artist: "Boedie",
+                    genre: "Latin/Urban",
+                    duration: "1:53",
+                    src: "music/ultimavuelta.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Samuel Alexandre - La Última Vuelta"
+                },
+                {
+                    id: 3,
+                    title: "Caminando",
+                    artist: "Boedie",
+                    genre: "Latin/Hip Hop",
+                    duration: "3:06",
+                    src: "music/caminando.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Don Bigg - Caminando"
+                },
+                {
+                    id: 4,
+                    title: "On The Road",
+                    artist: "Boedie",
+                    genre: "2000s Punk Rock",
+                    duration: "3:40",
+                    src: "music/ontheroad.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Abel - Onderweg"
+                },
+                {
+                    id: 5,
+                    title: "Lost Time",
+                    artist: "Boedie",
+                    genre: "2000s Punk Rock",
+                    duration: "2:43",
+                    src: "music/losttime.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Charles Aznavour - Hier Encore "
+                },
+                {
+                    id: 6,
+                    title: "Vielleicht Vielleicht", 
+                    artist: "Boedie", 
+                    genre: "Melodic Metalcore",
+                    duration: "3:38",
+                    src: "music/vielleichtvielleicht.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "MilleniumKid x JBS - Vielleicht Vielleicht"
+                },
+                {
+                    id: 7,
+                    title: "Menina de Vermelho Folk",
+                    artist: "Boedie",
+                    genre: "Folk",
+                    duration: "1:46",
+                    src: "music/meninadevermelhofolk.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Ramonmix, The Ironix, MC Menor JP - Menina de Vermelho"
+                },
+                {
+                    id: 8,
+                    title: "Menina de Vermelho (Folk Remix)",
+                    artist: "Boedie",
+                    genre: "Progressive House",
+                    duration: "2:25",
+                    src: "music/meninadevermelhoremix.m4a",
+                    cover: "images/robotdj.jpg",
+                    sample: "Ramonmix, The Ironix, MC Menor JP - Menina de Vermelho"
+                },
+        
+
+            ],
+            Vaibe: [
+                {
+                    id: 1,
+                    title: "Parle Pas d'Amour",
+                    artist: "Boedie",
+                    genre: "French Rap",
+                    duration: "2:18",
+                    src: "music/parlepasdamour.m4a",
+                    cover: "images/robotguitar.jpg",
+                    sample: "Van Halen - Ain't Talkin' Bout Love"
+                },
+                {
+                    id: 2,
+                    title: "K-bounce",
+                    artist: "Boedie",
+                    genre: "Future Bounce",
+                    duration: "2:48",
+                    src: "music/kbounce.m4a",
+                    cover: "images/robotguitar.jpg",
+                    sample: "Original"
+                },
+                {
+                    id: 3,
+                    title: "Pas Ma Faute",
+                    artist: "Boedie",
+                    genre: "French Rap",
+                    duration: "2:53",
+                    src: "music/pasmafaute.m4a",
+                    cover: "images/robotguitar.jpg",
+                    sample: "Original"
+                },
+                {
+                    id: 4,
+                    title: "Elysium",
+                    artist: "Boedie",
+                    genre: "Progressive House",
+                    duration: "3:00",
+                    src: "music/elysium.m4a",
+                    cover: "images/robotguitar.jpg",
+                    sample: "Original"
+                },
+                {
+                    id: 5,
+                    title: "Libéracion",
+                    artist: "Boedie",
+                    genre: "Reggaeton",
+                    duration: "3:13",
+                    src: "music/libéracion.m4a",
+                    cover: "images/robotguitar.jpg",
+                    sample: "Original (Deliverance v1)"
+                },
+                {
+                    id: 6,
+                    title: "Gouttes de Pluie",
+                    artist: "Boedie",
+                    genre: "French Hip Hop",
+                    duration: "3:17",
+                    src: "music/gouttesdepluie.m4a",
+                    cover: "images/robotguitar.jpg",
+                    sample: "Original"
+                },
+                {
+                    id: 7,
+                    title: "Zurückgelassen",
+                    artist: "Boedie",
+                    genre: "Hip Hop",
+                    duration: "3:04",
+                    src: "music/zurückgelassen.m4a",
+                    cover: "images/robotguitar.jpg",
+                    sample: "Original"
+                }
+            ]
+         
+        };
+
+        // Playlist metadata for the home page display
+        const playlistsMetadata = {
+            Originals: {
+                name: "Originals",
+                cover: "images/robotdrum.jpg",
+                creator: "Boedie"
+            },
+            Bootlegs: {
+                name: "Bootlegs",
+                cover: "images/robotdj.jpg",
+                creator: "Boedie"
+            },
+            Covers: {
+                name: "Covers",
+                cover: "images/robotsinger.jpg",
+                creator: "Boedie"
+            },
+            Vaibe: {
+                name: "Vaibe",
+                cover: "images/robotguitar.jpg",
+                creator: "Boedie"
+            }
+       
+        };
+
+        // Jukebox local tracks
+        let jukeboxTracks = [];
+
+        // Current playlist and track information
+        let currentPlaylistId = null;
+        let currentTracks = null;
+        let currentTrackIndex = null;
+        let isPlaying = false;
+        let isLooping = false;
+        let currentView = "home";
+
+        // DOM Elements
+        const audio = document.getElementById('audio');
+        const playBtn = document.getElementById('play-btn');
+        const playIcon = document.getElementById('play-icon');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const loopBtn = document.getElementById('loop-btn');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const currentTimeDisplay = document.getElementById('current-time');
+        const durationDisplay = document.getElementById('duration');
+        const tracksList = document.getElementById('tracks-list');
+        const jukeboxTracksList = document.getElementById('jukebox-tracks-list');
+        const currentTrackName = document.getElementById('current-track-name');
+        const currentTrackArtist = document.getElementById('current-track-artist');
+        const currentTrackImage = document.getElementById('current-track-image');
+        const playlistCover = document.getElementById('playlist-cover');
+        const playlistName = document.getElementById('playlist-name');
+        const playlistDetails = document.getElementById('playlist-details');
+        const homeView = document.getElementById('home-view');
+        const favoritesView = document.getElementById('favorites-view');
+        const jukeboxView = document.getElementById('jukebox-view');
+        const playlistView = document.getElementById('playlist-view');
+        const playlistsGrid = document.getElementById('playlists-grid');
+        const addLocalFilesBtn = document.getElementById('add-local-files');
+        const fileInput = document.getElementById('file-input');
+
+        // Initialize home page
+        function initializeHomePage() {
+            playlistsGrid.innerHTML = '';
+            for (const playlistId in allPlaylists) {
+                const metadata = playlistsMetadata[playlistId];
+                const tracks = allPlaylists[playlistId];
+                const card = document.createElement('div');
+                card.className = 'playlist-card';
+                card.setAttribute('data-playlist', playlistId);
+                let totalMinutes = 0;
+                tracks.forEach(track => {
+                    const timeParts = track.duration.split(':');
+                    totalMinutes += parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
+                });
+                const displayMinutes = Math.floor(totalMinutes / 60);
+                card.innerHTML = `
+                    <img src="${metadata.cover}" alt="${metadata.name}" class="playlist-card-image">
+                    <div class="playlist-card-title">${metadata.name}</div>
+                    <div class="playlist-card-info">By ${metadata.creator} • ${tracks.length} songs, ${displayMinutes} min</div>
+                `;
+                card.addEventListener('click', () => {
+                    switchPlaylist(playlistId);
+                    switchView('playlist');
+                    document.querySelectorAll('#playlist-list .playlist-item').forEach(pl => {
+                        pl.classList.remove('active');
+                        if (pl.getAttribute('data-playlist') === playlistId) {
+                            pl.classList.add('active');
+                        }
+                    });
+                    document.querySelectorAll('.sidebar .playlist-item').forEach(pl => {
+                        pl.classList.remove('active');
+                    });
+                });
+                playlistsGrid.appendChild(card);
+            }
+        }
+
+        // Initialize tracks for a playlist
+        function initializeTracks() {
+            if (!currentTracks) return;
+            const totalSongs = currentTracks.length;
+            let totalMinutes = 0;
+            currentTracks.forEach(track => {
+                const timeParts = track.duration.split(':');
+                totalMinutes += parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
+            });
+            const displayMinutes = Math.floor(totalMinutes / 60);
+            playlistDetails.textContent = `${totalSongs} songs, ${displayMinutes} min`;
+            tracksList.innerHTML = '';
+            currentTracks.forEach((track, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="track-number">${track.id}</td>
+                    <td>
+                      <div class="track-info">
+                            <img src="${track.cover}" alt="${track.title}" class="track-image">
+                            <div class="track-name-artist">
+                                <div class="track-name">${track.title}</div>
+                                <div class="track-artist">${track.artist}</div>
+                        </div>
+                    </td>
+                    <td class="track-genre">${track.genre}</td>
+                    <td class="track-sample">${track.sample}</td>
+                    <td class="track-duration">${track.duration}</td>
+                `;
+                row.addEventListener('click', () => {
+                    currentTrackIndex = index;
+                    loadTrack(currentTrackIndex);
+                    playTrack();
+                    updateActiveTracks();
+                });
+                tracksList.appendChild(row);
+            });
+        }
+
+        // Initialize Jukebox tracks
+        function initializeJukeboxTracks() {
+            jukeboxTracksList.innerHTML = '';
+            jukeboxTracks.forEach((track, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="track-number">${index + 1}</td>
+                    <td>
+                        
+                            <div class="track-name">${track.title}</div>
+                            
+                        </div>
+                    </td>
+               
+                    <td class="track-duration">${track.duration || '0:00'}</td>
+                `;
+                row.addEventListener('click', () => {
+                    currentTrackIndex = index;
+                    currentTracks = jukeboxTracks;
+                    currentPlaylistId = null; // Jukebox tracks aren't tied to a playlist
+                    loadTrack(currentTrackIndex);
+                    playTrack();
+                    updateActiveJukeboxTracks();
+                });
+                jukeboxTracksList.appendChild(row);
+            });
+        }
+
+        // Switch between views
+        function switchView(view) {
+            currentView = view;
+            if (view === 'home') {
+                homeView.style.display = 'block';
+                favoritesView.style.display = 'none';
+                jukeboxView.style.display = 'none';
+                playlistView.style.display = 'none';
+                initializeHomePage();
+            } else if (view === 'favorites') {
+                homeView.style.display = 'none';
+                favoritesView.style.display = 'block';
+                jukeboxView.style.display = 'none';
+                playlistView.style.display = 'none';
+            } else if (view === 'jukebox') {
+                homeView.style.display = 'none';
+                favoritesView.style.display = 'none';
+                jukeboxView.style.display = 'block';
+                playlistView.style.display = 'none';
+                initializeJukeboxTracks();
+            } else if (view === 'playlist') {
+                homeView.style.display = 'none';
+                favoritesView.style.display = 'none';
+                jukeboxView.style.display = 'none';
+                playlistView.style.display = 'block';
+            }
+        }
+
+        // Load track (supports both playlist and standalone/jukebox tracks)
+        function loadTrack(indexOrSrc, isStandalone = false) {
+            let track;
+            if (isStandalone) {
+                const card = indexOrSrc;
+                const src = card.getAttribute('data-src');
+                const title = card.querySelector('.track-card-title').textContent;
+                const artist = card.querySelector('.track-card-artist').textContent;
+                const cover = card.querySelector('.track-card-image').src;
+
+                track = { src, title, artist, cover };
+            } else {
+                track = currentTracks[indexOrSrc];
+            }
+
+            audio.src = track.src;
+            currentTrackName.textContent = track.title;
+            currentTrackArtist.textContent = track.artist;
+            currentTrackImage.src = track.cover || 'images/robotguitar.jpg';
+
+            progressBar.style.width = '0%';
+            currentTimeDisplay.textContent = '0:00';
+            audio.addEventListener('loadedmetadata', () => {
+                durationDisplay.textContent = formatTime(audio.duration);
+            }, { once: true });
+        }
+
+        // Update active tracks in playlist view
+        function updateActiveTracks() {
+            const trackRows = tracksList.querySelectorAll('tr');
+            trackRows.forEach((row, index) => {
+                row.classList.toggle('active', index === currentTrackIndex);
+            });
+        }
+
+        // Update active tracks in jukebox view
+        function updateActiveJukeboxTracks() {
+            const trackRows = jukeboxTracksList.querySelectorAll('tr');
+            trackRows.forEach((row, index) => {
+                row.classList.toggle('active', index === currentTrackIndex);
+            });
+        }
+
+        // Play track
+        function playTrack() {
+            audio.play();
+            isPlaying = true;
+            playIcon.className = 'fas fa-pause';
+        }
+
+        // Pause track
+        function pauseTrack() {
+            audio.pause();
+            isPlaying = false;
+            playIcon.className = 'fas fa-play';
+        }
+
+        // Next track
+        function nextTrack() {
+            if (currentTracks && currentTrackIndex !== null) {
+                currentTrackIndex = (currentTrackIndex + 1) % currentTracks.length;
+                loadTrack(currentTrackIndex);
+                playTrack();
+                if (currentView === 'jukebox') updateActiveJukeboxTracks();
+                else if (currentView === 'playlist') updateActiveTracks();
+            }
+        }
+
+        // Previous track
+        function prevTrack() {
+            if (currentTracks && currentTrackIndex !== null) {
+                currentTrackIndex = (currentTrackIndex - 1 + currentTracks.length) % currentTracks.length;
+                loadTrack(currentTrackIndex);
+                playTrack();
+                if (currentView === 'jukebox') updateActiveJukeboxTracks();
+                else if (currentView === 'playlist') updateActiveTracks();
+            }
+        }
+
+        // Toggle loop
+        function toggleLoop() {
+            isLooping = !isLooping;
+            audio.loop = isLooping;
+            loopBtn.classList.toggle('active', isLooping);
+        }
+
+        // Format time in MM:SS
+        function formatTime(seconds) {
+            if (isNaN(seconds) || seconds === Infinity) return '0:00';
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // Switch playlist
+        function switchPlaylist(playlistId) {
+            currentPlaylistId = playlistId;
+            currentTracks = allPlaylists[playlistId];
+            playlistName.textContent = playlistsMetadata[playlistId].name;
+            playlistCover.src = playlistsMetadata[playlistId].cover;
+            currentTrackIndex = null;
+            if (!isPlaying) {
+                currentTrackName.textContent = "Select a track";
+                currentTrackArtist.textContent = "-";
+                currentTrackImage.src = "images/robotguitar.jpg";
+            }
+            initializeTracks();
+        }
+
+        // Handle local file addition
+        addLocalFilesBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files).filter(file => file.type.startsWith('audio/'));
+            jukeboxTracks = [];
+
+            for (const file of files) {
+                const url = URL.createObjectURL(file);
+                const audioTemp = new Audio(url);
+                await new Promise((resolve) => {
+                    audioTemp.addEventListener('loadedmetadata', () => {
+                        jukeboxTracks.push({
+                            title: file.name.replace(/\.[^/.]+$/, ""),
+                            artist: 'Unknown', // Could use libraries like jsmediatags for metadata
+                            duration: formatTime(audioTemp.duration),
+                            src: url,
+                            cover: 'images/robotmusician.jpg' // Default cover
+                        });
+                        resolve();
+                    });
+                });
+            }
+
+            initializeJukeboxTracks();
+            fileInput.value = ''; // Reset input
+        });
+
+        // Event Listeners
+        playBtn.addEventListener('click', () => {
+            if (currentTrackIndex === null && currentTracks && currentTracks.length > 0) {
+                currentTrackIndex = 0;
+                loadTrack(0);
+                playTrack();
+                if (currentView === 'jukebox') updateActiveJukeboxTracks();
+                else if (currentView === 'playlist') updateActiveTracks();
+            } else if (audio.src) {
+                if (isPlaying) {
+                    pauseTrack();
+                } else {
+                    playTrack();
+                }
+            }
+        });
+
+        prevBtn.addEventListener('click', prevTrack);
+        nextBtn.addEventListener('click', nextTrack);
+        loopBtn.addEventListener('click', toggleLoop);
+
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const progressPercent = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+                currentTimeDisplay.textContent = formatTime(audio.currentTime);
+            }
+        });
+
+        progressContainer.addEventListener('click', (e) => {
+            const width = progressContainer.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        });
+
+        audio.addEventListener('ended', () => {
+            if (!isLooping && currentTracks && currentTrackIndex !== null) {
+                nextTrack();
+            }
+        });
+
+        document.querySelectorAll('#playlist-list .playlist-item').forEach((item) => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.sidebar .playlist-item').forEach(pl => {
+                    pl.classList.remove('active');
+                });
+                item.classList.add('active');
+                const playlistId = item.getAttribute('data-playlist');
+                switchPlaylist(playlistId);
+                switchView('playlist');
+            });
+        });
+
+        document.querySelector('.playlist-item[data-view="home"]').addEventListener('click', () => {
+            document.querySelectorAll('.sidebar .playlist-item').forEach(pl => {
+                pl.classList.remove('active');
+            });
+            document.querySelector('.playlist-item[data-view="home"]').classList.add('active');
+            switchView('home');
+        });
+
+        document.querySelector('.playlist-item[data-view="favorites"]').addEventListener('click', () => {
+            document.querySelectorAll('.sidebar .playlist-item').forEach(pl => {
+                pl.classList.remove('active');
+            });
+            document.querySelector('.playlist-item[data-view="favorites"]').classList.add('active');
+            switchView('favorites');
+        });
+
+        document.querySelector('.playlist-item[data-view="jukebox"]').addEventListener('click', () => {
+            document.querySelectorAll('.sidebar .playlist-item').forEach(pl => {
+                pl.classList.remove('active');
+            });
+            document.querySelector('.playlist-item[data-view="jukebox"]').classList.add('active');
+            switchView('jukebox');
+        });
+
+        document.querySelector('.add-playlist').addEventListener('click', () => {
+            const playlistName = prompt('Enter new playlist name:');
+            if (playlistName && playlistName.trim() !== '') {
+                const playlistId = 'playlist_' + Date.now();
+                allPlaylists[playlistId] = [];
+                playlistsMetadata[playlistId] = {
+                    name: playlistName.trim(),
+                    cover: `https://via.placeholder.com/200/${Math.floor(Math.random()*16777215).toString(16)}/ffffff?text=${encodeURIComponent(playlistName.trim())}`,
+                    creator: "Boedie"
+                };
+                const playlistList = document.getElementById('playlist-list');
+                const newPlaylist = document.createElement('li');
+                newPlaylist.className = 'playlist-item';
+                newPlaylist.setAttribute('data-playlist', playlistId);
+                newPlaylist.innerHTML = `<i class="fas fa-list"></i> ${playlistName.trim()}`;
+                newPlaylist.addEventListener('click', () => {
+                    document.querySelectorAll('.sidebar .playlist-item').forEach(pl => {
+                        pl.classList.remove('active');
+                    });
+                    newPlaylist.classList.add('active');
+                    switchPlaylist(playlistId);
+                    switchView('playlist');
+                });
+                playlistList.appendChild(newPlaylist);
+                initializeHomePage();
+            }
+        });
+
+        // Add click event for latest tracks and favorites
+        function setupTrackCardListeners() {
+            document.querySelectorAll('.track-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    loadTrack(card, true);
+                    playTrack();
+                });
+            });
+        }
+
+        setupTrackCardListeners();
+
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            if (searchTerm === '') {
+                if (currentView === 'playlist') {
+                    initializeTracks();
+                } else if (currentView === 'home') {
+                    initializeHomePage();
+                } else if (currentView === 'jukebox') {
+                    initializeJukeboxTracks();
+                }
+                return;
+            }
+            switchView('playlist');
+            tracksList.innerHTML = '';
+            let searchResults = [];
+            for (const playlistId in allPlaylists) {
+                const tracks = allPlaylists[playlistId];
+                const matchingTracks = tracks.filter(track => 
+                    track.title.toLowerCase().includes(searchTerm) || 
+                    track.artist.toLowerCase().includes(searchTerm) ||
+                    track.genre.toLowerCase().includes(searchTerm) ||
+                    track.sample.toLowerCase().includes(searchTerm)
+                );
+                matchingTracks.forEach(track => {
+                    searchResults.push({
+                        ...track,
+                        playlistId: playlistId
+                    });
+                });
+            }
+            if (searchResults.length === 0) {
+                tracksList.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 30px;">
+                            No results found for "${searchTerm}"
+                        </td>
+                    </tr>
+                `;
+            } else {
+                playlistName.textContent = `Search Results for "${searchTerm}"`;
+                playlistDetails.textContent = `${searchResults.length} songs found`;
+                searchResults.forEach((track, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="track-number">${index + 1}</td>
+                        <td>
+                            <div class="track-info">
+                                <img src="${track.cover}" alt="${track.title}" class="track-image">
+                            
+                                    <div class="track-name">${track.title}</div>
+                                    
+                                </div>
+                            </div>
+                        </td>
+                        <td class="track-genre">${track.genre}</td>
+                        <td class="track-sample">${track.sample}</td>
+                        <td class="track-duration">${track.duration}</td>
+                    `;
+                    row.addEventListener('click', () => {
+                        currentPlaylistId = track.playlistId;
+                        currentTracks = allPlaylists[track.playlistId];
+                        currentTrackIndex = currentTracks.findIndex(t => t.id === track.id);
+                        document.querySelectorAll('.sidebar .playlist-item').forEach(pl => {
+                            pl.classList.remove('active');
+                            if (pl.getAttribute('data-playlist') === track.playlistId) {
+                                pl.classList.add('active');
+                            }
+                        });
+                        loadTrack(currentTrackIndex);
+                        playTrack();
+                        updateActiveTracks();
+                    });
+                    tracksList.appendChild(row);
+                });
+            }
+        });
+
+        const volumeSlider = document.querySelector('.volume-slider');
+        const volumeFilled = document.querySelector('.volume-slider-filled');
+        volumeSlider.addEventListener('click', (e) => {
+            const sliderWidth = volumeSlider.clientWidth;
+            const clickPosition = e.offsetX;
+            const volumePercent = clickPosition / sliderWidth;
+            audio.volume = volumePercent;
+            volumeFilled.style.width = `${volumePercent * 100}%`;
+            const volumeIcon = document.querySelector('.volume-button i');
+            if (volumePercent === 0) {
+                volumeIcon.className = 'fas fa-volume-mute';
+            } else if (volumePercent < 0.5) {
+                volumeIcon.className = 'fas fa-volume-down';
+            } else {
+                volumeIcon.className = 'fas fa-volume-up';
+            }
+        });
+
+        const volumeButton = document.querySelector('.volume-button');
+        let previousVolume = 1;
+        volumeButton.addEventListener('click', () => {
+            const volumeIcon = document.querySelector('.volume-button i');
+            if (audio.volume > 0) {
+                previousVolume = audio.volume;
+                audio.volume = 0;
+                volumeFilled.style.width = '0%';
+                volumeIcon.className = 'fas fa-volume-mute';
+            } else {
+                audio.volume = previousVolume;
+                volumeFilled.style.width = `${previousVolume * 100}%`;
+                if (previousVolume < 0.5) {
+                    volumeIcon.className = 'fas fa-volume-down';
+                } else {
+                    volumeIcon.className = 'fas fa-volume-up';
+                }
+            }
+        });
+
+        const shuffleButton = document.querySelector('.shuffle');
+        shuffleButton.addEventListener('click', () => {
+            shuffleButton.classList.toggle('active');
+            if (shuffleButton.classList.contains('active')) {
+                if (currentView === 'playlist') {
+                    const tracksArray = Array.from(tracksList.querySelectorAll('tr'));
+                    for (let i = tracksArray.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        tracksList.insertBefore(tracksArray[j], tracksArray[i]);
+                    }
+                } else if (currentView === 'jukebox') {
+                    const tracksArray = Array.from(jukeboxTracksList.querySelectorAll('tr'));
+                    for (let i = tracksArray.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        jukeboxTracksList.insertBefore(tracksArray[j], tracksArray[i]);
+                    }
+                }
+            } else {
+                if (currentView === 'playlist') initializeTracks();
+                else if (currentView === 'jukebox') initializeJukeboxTracks();
+                if (currentTrackIndex !== null) {
+                    if (currentView === 'jukebox') updateActiveJukeboxTracks();
+                    else if (currentView === 'playlist') updateActiveTracks();
+                }
+            }
+        });
+
+        window.addEventListener('load', () => {
+            switchView('home');
+            document.querySelectorAll('.sidebar .playlist-item').forEach(pl => {
+                pl.classList.remove('active');
+            });
+            document.querySelector('.playlist-item[data-view="home"]').classList.add('active');
+        });
+    </script>
+</body>
+</html>
